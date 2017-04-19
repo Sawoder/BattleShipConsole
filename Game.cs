@@ -11,12 +11,12 @@ namespace BattleShipConsole
         static void Main(string[] args)
         {
             bool isGame = true;
-            bool turn = true;
+            bool isPlayerTurn = true;
             int scorePlayer = 0;
             int scoreComputer = 0;
             Random rnd = new Random(DateTime.Now.Millisecond);
             int x, y;
-            BoardCell[,] enemyField = new BoardCell[10, 10];
+            BoardCell[,] enemyField = new BoardCell[10, 10]; // Отрисовка поля попаданий для игрока
             for (int i = 0; i < 10; i++)
                 for (int j = 0; j < 10; j++)
                     enemyField[i, j] = new BoardCell(i, j);
@@ -35,9 +35,9 @@ namespace BattleShipConsole
             while (isGame)
             {
 
-                if (turn)
+                if (isPlayerTurn)
                 {
-                    Console.Clear();
+                    Console.Clear(); // Отображаем поле соперника без кораблей
                     for (int i = 0; i < 10; i++)
                     {
                         for (int j = 0; j < 10; j++)
@@ -45,7 +45,7 @@ namespace BattleShipConsole
                         Console.WriteLine();
                     }
                     Console.WriteLine("Your score: {0}, Enemy score: {1}", scorePlayer, scoreComputer);
-                    for (int i = 0; i < 10; i++)
+                    for (int i = 0; i < 10; i++) // Отображаем поле игрока
                     {
                         for (int j = 0; j < 10; j++)
                             Console.Write("{0} ", (int)player.field[i, j].stateCell);
@@ -64,7 +64,9 @@ namespace BattleShipConsole
                         continue;
                     }
 
+                    // Если попал в уже отыгранную клетку, то делаешь еще один ход
                     if (computer.field[x, y].stateCell == BoardCell.StateCell.Hit || computer.field[x, y].stateCell == BoardCell.StateCell.Miss) continue;
+                    // Дать дополнительный ход за попадание по кораблю противника, если сбиты все, то закончить игру
                     if (computer.field[x, y].stateCell == BoardCell.StateCell.Ship)
                     {
                         computer.field[x, y].stateCell = BoardCell.StateCell.Hit;
@@ -78,9 +80,9 @@ namespace BattleShipConsole
                         computer.field[x, y].stateCell = BoardCell.StateCell.Miss;
                         enemyField[x, y].stateCell = BoardCell.StateCell.Miss;
                     }
-                    turn = false;
+                    isPlayerTurn = false;
                 }
-                else
+                else // Отыгрыш компьютера
                 {
                     x = rnd.Next(0, 10);
                     y = rnd.Next(0, 10);
@@ -93,7 +95,7 @@ namespace BattleShipConsole
                             continue;
                     }
                     else player.field[x, y].stateCell = BoardCell.StateCell.Miss;
-                    turn = true;
+                    isPlayerTurn = true;
                 }
 
                 if (scorePlayer == 20 || scoreComputer == 20) // Закончить игру, если потоплены все корабли
